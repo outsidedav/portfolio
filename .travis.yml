@@ -8,10 +8,11 @@ cache:
   directories:
     - public
 
+addons:
+  chrome: stable
+
 before_install:
-  - sudo apt-get -qq update
-  - sudo apt-get install python3-pip
-  - sudo -H pip3 install --upgrade pip
+  - npm install -g @lhci/cli@0.3.0-alpha.0
 
 before_script:
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
@@ -22,12 +23,15 @@ script:
   - npm test
   - './cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT'
   - npm run build
+  - lhci autorun
 
 after_success:
+  - sudo apt-get -qq update
+  - sudo apt-get install python3-pip
+  - sudo -H pip3 install --upgrade pip
   - pip install --user awscli
   - export PATH=$PATH:$HOME/.local/bin
   - npm run deploy
-  - npm run lh -- https://beta.matthiaskretschmann.com
 
 notifications:
   email: false
